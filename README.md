@@ -2,9 +2,18 @@
 
 Mod for The Long Dark that magically brings electricity back. You can turn lights on and off by using the light switches. If no lightswitch exist, you can toggle lights on/off with the commands 'toggle_lights' or 'thl'. (Side effect: this works outside too)
 
+## Updates
+### v1.2
+* Fixed behaviour during auroras.
+* Added toggle option to turn off flickering during auroras.
+
+### v1.1
+* Filtered light sources so it doesn't turn on emergency lights, car lights or TVs.
+
 ## Options
 + **Intensity Multiplier**: Modifies how much bright or dim will be the electrical lights by default.
 + **Range Multiplier**: Modifies the range that the electrical lights cast light to.
++ **Turn off aurora light flicker**: Turns off light flickering during auroras.
 
 ## Installation
 * Download and install [Mod Installer](https://github.com/WulfMarius/Mod-Installer/releases) by **WulfMarius** if you don't have it already.

@@ -35,15 +35,7 @@ namespace HouseLights
                 AuroraActivatedToggle[] radios = __instance.gameObject.GetComponentsInParent<AuroraActivatedToggle>();
                 AuroraScreenDisplay[] screens = __instance.gameObject.GetComponentsInChildren<AuroraScreenDisplay>();
 
-                if (radios.Length > 0)
-                {
-                    return;
-                }
-                else if (screens.Length > 0)
-                {
-                    return;
-                }
-                else
+                if (radios.Length == 0 && screens.Length == 0)
                 {
                     HouseLights.AddElectrolizer(__instance);
                 }
@@ -94,6 +86,22 @@ namespace HouseLights
                     __instance.m_InteractiveObjectUnderCrosshair.transform.localScale = new Vector3(scale.x, scale.y * -1, scale.z);
 
                     __result = true;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(AuroraElectrolizer), "UpdateIntensity")]
+        internal class AuroraElectrolizer_UpdateIntensity
+        {
+            private static bool Prefix(AuroraElectrolizer __instance)
+            {
+                if (HouseLights.options.disableAuroraFlicker)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
                 }
             }
         }

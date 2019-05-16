@@ -9,6 +9,8 @@ namespace HouseLights
     {
         public float rangeMultiplier = 1.4f;
         public float intensityValue = 2f;
+
+        public bool disableAuroraFlicker = false;
     }
 
     internal class Settings : ModSettingsBase
@@ -25,6 +27,10 @@ namespace HouseLights
         [Slider(0f, 5f, 1)]
         public float rangeMultiplier = 1.4f;
 
+        [Name("Turn off aurora light flicker")]
+        [Description("If set to yes, aurora powered lights won't flicker and will stay on.")]
+        public bool disableAuroraFlicker = false;
+
         internal Settings()
         {
             if (File.Exists(Path.Combine(HouseLights.modDataFolder, HouseLights.settingsFile)))
@@ -34,6 +40,7 @@ namespace HouseLights
 
                 intensityValue = setOptions.intensityValue;
                 rangeMultiplier = setOptions.rangeMultiplier;
+                disableAuroraFlicker = setOptions.disableAuroraFlicker;
             }
         }
 
@@ -41,6 +48,7 @@ namespace HouseLights
         {
             setOptions.intensityValue = (float)Math.Round(intensityValue, 1);
             setOptions.rangeMultiplier = (float)Math.Round(rangeMultiplier, 1);
+            setOptions.disableAuroraFlicker = disableAuroraFlicker;
 
             string jsonOpts = FastJson.Serialize(setOptions);
 

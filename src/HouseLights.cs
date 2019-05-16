@@ -58,6 +58,7 @@ namespace HouseLights
             {
                 float curRange = light.m_LocalLights[i].range;
                 newLight.ranges[i] = curRange;
+                
             }
 
             electroSources.Add(newLight);
@@ -103,25 +104,37 @@ namespace HouseLights
         {
             for (int e = 0; e < electroSources.Count; e++)
             {
-                if (lightsOn)
+                for (int i = 0; i < electroSources[e].electrolizer.m_LocalLights.Length; i++)
                 {
-                    for (int i = 0; i < electroSources[e].electrolizer.m_LocalLights.Length; i++)
-                    {
-                        float cur_range = electroSources[e].ranges[i];
+                    float cur_range = electroSources[e].ranges[i];
 
-                        cur_range *= options.rangeMultiplier;
-                        cur_range = Math.Min(cur_range, 20f);
+                    cur_range *= options.rangeMultiplier;
+                    cur_range = Math.Min(cur_range, 20f);
 
-                        electroSources[e].electrolizer.m_LocalLights[i].range = cur_range;
-                    }
+                    electroSources[e].electrolizer.m_LocalLights[i].range = cur_range;
 
-                    HouseLightsUtils.SetPrivFloat(electroSources[e].electrolizer, "m_CurIntensity", options.intensityValue);
-                    HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateLight", false);
-                    HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateFX", false);
-                    HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateEmissiveObjects", false);
-                    HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateAudio", null);
+
                 }
-                else
+
+                if (lightsOn && !mngr.AuroraIsActive())
+                {
+                    if (!electroSources[e].electrolizer.gameObject.name.Contains("Alarm") &&
+                        !electroSources[e].electrolizer.gameObject.name.Contains("Headlight") &&
+                        !electroSources[e].electrolizer.gameObject.name.Contains("Taillight") &&
+                        !electroSources[e].electrolizer.gameObject.name.Contains("Television") &&
+                        !electroSources[e].electrolizer.gameObject.name.Contains("Computer") &&
+                        !electroSources[e].electrolizer.gameObject.name.Contains("Machine") &&
+                        !electroSources[e].electrolizer.gameObject.name.Contains("ControlBox") &&
+                        !electroSources[e].electrolizer.gameObject.name.Contains("Interiorlight"))
+                    {
+                        HouseLightsUtils.SetPrivFloat(electroSources[e].electrolizer, "m_CurIntensity", options.intensityValue);
+                        HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateLight", false);
+                        HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateFX", false);
+                        HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateEmissiveObjects", false);
+                        HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "StopAudio", null);
+                    }
+                }
+                else if (!mngr.AuroraIsActive())
                 {
                     HouseLightsUtils.SetPrivFloat(electroSources[e].electrolizer, "m_CurIntensity", 0f);
                     HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateLight", true);
@@ -129,8 +142,28 @@ namespace HouseLights
                     HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateEmissiveObjects", true);
                     HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateAudio", null);
                 }
-                
+                else{
+                    //HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateIntensity", Time.deltaTime);
+                    HouseLightsUtils.SetPrivFloat(electroSources[e].electrolizer, "m_CurIntensity", options.intensityValue);
+                }
+
             }
+            /*}
+            else
+            {
+                for (int e = 0; e < electroSources.Count; e++)
+                {
+                    for (int i = 0; i < electroSources[e].electrolizer.m_LocalLights.Length; i++)
+                    {
+                        HouseLightsUtils.SetPrivFloat(electroSources[e].electrolizer, "m_CurIntensity", options.intensityValue);
+                        HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateIntensity", Time.deltaTime);
+                        HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateLight", false);
+                        HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateFX", false);
+                        HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateEmissiveObjects", false);
+                        HouseLightsUtils.InvokePrivMethod(electroSources[e].electrolizer, "UpdateAudio", null);
+                    }
+                }
+            }*/
         }
 
         internal static void RegisterCommands()
