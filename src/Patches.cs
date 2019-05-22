@@ -105,5 +105,17 @@ namespace HouseLights
                 }
             }
         }
+
+        [HarmonyPatch(typeof(Weather), "IsTooDarkForAction", new Type[] { typeof(ActionsToBlock) })]
+        internal class Weather_IsTooDarkForAction
+        {
+            private static void Postfix(Weather __instance, ref bool __result)
+            {
+                if (__result && GameManager.GetWeatherComponent().IsIndoorScene() && HouseLights.lightsOn)
+                {
+                    __result = false;
+                }
+            }
+        }
     }
 }
