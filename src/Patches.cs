@@ -6,7 +6,7 @@ namespace HouseLights
 {
     class Patches
     {
-        [HarmonyPatch(typeof(GameManager), "Awake")]
+        /*[HarmonyPatch(typeof(GameManager), "Awake")]
         internal class GameManager_Awake
         {
             public static void Prefix()
@@ -16,9 +16,22 @@ namespace HouseLights
                     HouseLights.Init();
                 }
             }
-        }
+        }*/
 
-        [HarmonyPatch(typeof(MissionServicesManager), "SceneLoadCompleted")]
+        [HarmonyPatch(typeof(GameManager), "InstantiatePlayerObject")]
+        internal class GameManager_InstantiatePlayerObject
+        {
+            public static void Prefix()
+            {
+                if (!InterfaceManager.IsMainMenuActive())
+                {
+                    HouseLights.Init();
+                }
+            }
+        }
+        
+
+    [HarmonyPatch(typeof(MissionServicesManager), "SceneLoadCompleted")]
         internal class MissionServicesManager_SceneLoadCompleted
         {
             private static void Postfix(MissionServicesManager __instance)
@@ -43,8 +56,19 @@ namespace HouseLights
             }
         }
 
-        [HarmonyPatch(typeof(AuroraManager), "Update")]
-        internal class AuroraManager_Update
+        [HarmonyPatch(typeof(AuroraManager), "RegisterAuroraLightSimple", new Type[] { typeof(AuroraLightingSimple) })]
+        internal class AuroraManager_RegisterLightSimple
+        {
+            private static void Postfix(AuroraManager __instance, AuroraLightingSimple auroraLightSimple)
+            {
+                HouseLights.AddElectrolizerLight(auroraLightSimple);
+            }
+        }
+
+
+        //[HarmonyPatch(typeof(AuroraManager), "Update")]
+        [HarmonyPatch(typeof(AuroraManager), "UpdateForceAurora")]
+        internal class AuroraManager_UpdateForceAurora
         {
             private static void Postfix(AuroraManager __instance)
             {
@@ -95,7 +119,7 @@ namespace HouseLights
         {
             private static bool Prefix(AuroraElectrolizer __instance)
             {
-                if (HouseLights.options.disableAuroraFlicker)
+                if (Settings.options.disableAuroraFlicker)
                 {
                     return false;
                 }
