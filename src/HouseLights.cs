@@ -136,11 +136,16 @@ namespace HouseLights
                         electroSources[e].electrolizer.m_LocalLights[i].range = cur_range;
 
                         ColorHSV curColor = electroSources[e].colors[i];
-                        curColor.s *= 0.1f;
+
+                        if (Settings.options.whiteLights)
+                            curColor.s *= 0.15f;
 
                         electroSources[e].electrolizer.m_LocalLights[i].color = curColor;
 
-                        electroSources[e].electrolizer.m_LocalLights[i].shadows = LightShadows.Soft;
+                        if (Settings.options.castShadows)
+                        {
+                            electroSources[e].electrolizer.m_LocalLights[i].shadows = LightShadows.Soft;
+                        }
                     }
 
                     if (lightsOn && !mngr.AuroraIsActive())
@@ -191,11 +196,16 @@ namespace HouseLights
                         electroLightSources[e].electrolizer.m_LocalLights[i].range = cur_range;
 
                         ColorHSV curColor = electroLightSources[e].colors[i];
-                        curColor.s *= 0.1f;
+
+                        if (Settings.options.whiteLights)
+                            curColor.s *= 0.15f;
 
                         electroLightSources[e].electrolizer.m_LocalLights[i].color = curColor;
 
-                        electroLightSources[e].electrolizer.m_LocalLights[i].shadows = LightShadows.Soft;
+                        if (Settings.options.castShadows)
+                        {
+                            electroLightSources[e].electrolizer.m_LocalLights[i].shadows = LightShadows.Soft;
+                        }
                     }
 
                     if (lightsOn && !mngr.AuroraIsActive())

@@ -20,6 +20,14 @@ namespace HouseLights
         [Name("Turn off aurora light flicker")]
         [Description("If set to yes, aurora powered lights won't flicker and will stay on.")]
         public bool disableAuroraFlicker = false;
+
+        [Name("Cast Shadows")]
+        [Description("If set to yes, lights will cast shadows (can show artifacts and might reduce performance)")]
+        public bool castShadows = false;
+
+        [Name("Colorless lights")]
+        [Description("If set to yes, lights will cast a more white light. If set to no, they will cast light with the default color.")]
+        public bool whiteLights = false;
     }
 
     internal static class Settings
