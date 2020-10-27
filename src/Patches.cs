@@ -36,6 +36,15 @@ namespace HouseLights
         {
             private static void Postfix(MissionServicesManager __instance)
             {
+                // Fire_Update_Prefix will not run if there are no fire sources (eg post office)
+                if (Settings.options.stoveGenerator)
+                {
+                    HouseLights.stoveHeatRatio = 0f;
+                }
+                else
+                {
+                    HouseLights.stoveHeatRatio = 1f;
+                }
                 // if not stove generator, scan extenral and indoors scenes, if using it, scan only internal ones
                 if (!Settings.options.stoveGenerator || (Settings.options.stoveGenerator && GameManager.GetWeatherComponent().IsIndoorScene())) {
                     HouseLights.GetSwitches();
