@@ -1,7 +1,5 @@
 ﻿using ModSettings;
-using System.IO;
-using System;
-using System.Text;
+using System.Reflection;
 
 namespace HouseLights
 {
@@ -28,8 +26,40 @@ namespace HouseLights
         [Name("Colorless lights")]
         [Description("If set to yes, lights will cast a more white light. If set to no, they will cast light with the default color.")]
         public bool whiteLights = false;
-    }
 
+        [Name("Stove genrator")]
+        [Description("If setto yes, stoves are working as power generator and needed to be burning (+20C) to get lights. If not, lights work regardless of stove status.")]
+        public bool stoveGenerator = false;
+
+        [Name("Generator temp")]
+        [Description("Optimal stove temperature for electricity to flow; if temperature is lower than this, it will reduce light intesivity. Recommended 50+")]
+        [Slider(10f, 80f)]
+        public float stoveGeneratorTemp = 50f;
+
+        [Name("Generator min temp")]
+        [Description("Optimal stove temperature for electricity to flow; if temperature is lower than this, it will reduce light intesivity. Recommended 15")]
+        [Slider(0f, 15f)]
+        public float stoveGeneratorMinTemp = 15f;
+
+        protected override void OnChange(FieldInfo field, object oldValue, object newValue)
+        {
+            RefreshFields();
+        }
+
+        internal void RefreshFields()
+        {
+            if (stoveGenerator)
+            {
+                SetFieldVisible(nameof(stoveGeneratorTemp), true);
+                SetFieldVisible(nameof(stoveGeneratorMinTemp), true);
+            }
+            else
+            {
+                SetFieldVisible(nameof(stoveGeneratorTemp), false);
+                SetFieldVisible(nameof(stoveGeneratorMinTemp), false);
+            }
+        }
+    }
     internal static class Settings
     {
         public static HouseLightsSettings options;
