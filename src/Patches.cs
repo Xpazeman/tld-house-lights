@@ -1,7 +1,5 @@
 ﻿using System;
 using Harmony;
-using Il2CppSystem.Security.Cryptography.X509Certificates;
-using MelonLoader;
 using UnityEngine;
 
 namespace HouseLights
@@ -38,10 +36,9 @@ namespace HouseLights
         {
             private static void Postfix(MissionServicesManager __instance)
             {
-                // We do not need to scan when outside, right ?
-                if (GameManager.GetWeatherComponent().IsIndoorScene()) {
+                // if not stove generator, scan extenral and indoors scenes, if using it, scan only internal ones
+                if (!Settings.options.stoveGenerator || (Settings.options.stoveGenerator && GameManager.GetWeatherComponent().IsIndoorScene())) {
                     HouseLights.GetSwitches();
-                    //HouseLights.GetStoves();
                 }
             }
         }
@@ -155,14 +152,13 @@ namespace HouseLights
             {
                 if (!Settings.options.stoveGenerator) { return false; }
                 if (GameManager.m_IsPaused) { return false; }
-                // MelonLogger.Log(__instance.GetCurrentTempIncrease());
 
                 float tempIncr = 0f;
                 float currTempIncr = 0f;
 
                 if (__instance.m_HeatSource.IsTurnedOn() && __instance.GetFireState() != FireState.Off) {
-                    GameObject obj = __instance.transform.GetParent().gameObject;
-                    if ((bool)obj.name.ToLower().Contains("woodstove") || obj.name.ToLower().Contains("potbellystove"))
+                    GameObject obj = __instance.transform.GetParent()?.gameObject;
+                    if (obj && (obj.name.ToLower().Contains("woodstove") || obj.name.ToLower().Contains("potbellystove")))
                     {
                         // get warmest stove in scene
                         currTempIncr = __instance.GetCurrentTempIncrease();
@@ -170,8 +166,7 @@ namespace HouseLights
                         {
                             tempIncr = __instance.GetCurrentTempIncrease();
                         }
-                        HouseLights.stoveHeatRatio = Mathf.Clamp(((tempIncr - Settings.options.stoveGeneratorMinTemp) / (Settings.options.stoveGeneratorTemp - Settings.options.stoveGeneratorMinTemp)), 0f, 1f);
-                        //MelonLogger.Log(obj.name + " " + __instance.GetCurrentTempIncrease() + " " + HouseLights.stoveHeatRatio);
+                        HouseLights.stoveHeatRatio = Mathf.InverseLerp(Settings.options.stoveGeneratorMinTemp, Settings.options.stoveGeneratorTemp, tempIncr);
                     }
                 }
                 return false;

@@ -28,18 +28,20 @@ namespace HouseLights
         public bool whiteLights = false;
 
         [Name("Stove genrator")]
-        [Description("If setto yes, stoves are working as power generator and needed to be burning (+20C) to get lights. If not, lights work regardless of stove status.")]
+        [Description("If set to yes, stoves are working as power generator and needed to be at certian temperature to get lights. Outside lights will be disabled. If not, lights work regardless of stove status and outside light can be used.")]
         public bool stoveGenerator = false;
+
+        [Name("Generator min temp")]
+        [Description("Minimal stove temperature for electricity to flow. Recommended 15")]
+        [Slider(0f, 80f)]
+        public float stoveGeneratorMinTemp = 15f;
 
         [Name("Generator temp")]
         [Description("Optimal stove temperature for electricity to flow; if temperature is lower than this, it will reduce light intesivity. Recommended 50+")]
-        [Slider(10f, 80f)]
+        [Slider(0f, 80f)]
         public float stoveGeneratorTemp = 50f;
 
-        [Name("Generator min temp")]
-        [Description("Optimal stove temperature for electricity to flow; if temperature is lower than this, it will reduce light intesivity. Recommended 15")]
-        [Slider(0f, 15f)]
-        public float stoveGeneratorMinTemp = 15f;
+
 
         protected override void OnChange(FieldInfo field, object oldValue, object newValue)
         {
@@ -58,6 +60,11 @@ namespace HouseLights
                 SetFieldVisible(nameof(stoveGeneratorTemp), false);
                 SetFieldVisible(nameof(stoveGeneratorMinTemp), false);
             }
+            if (stoveGeneratorMinTemp >= stoveGeneratorTemp)
+            {
+                stoveGeneratorMinTemp = stoveGeneratorTemp - 1;
+                RefreshGUI();
+            }
         }
     }
     internal static class Settings
@@ -67,6 +74,12 @@ namespace HouseLights
         public static void OnLoad()
         {
             options = new HouseLightsSettings();
+            // if someone edited json and tried to be "smart".
+            if (options.stoveGeneratorMinTemp >= options.stoveGeneratorTemp)
+            {
+                options.stoveGeneratorMinTemp = options.stoveGeneratorTemp - 1;
+            }
+            options.RefreshFields();
             options.AddToModSettings("House Lights Settings");
         }
     }

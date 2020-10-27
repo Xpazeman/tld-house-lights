@@ -121,7 +121,7 @@ namespace HouseLights
 
         internal static void UpdateElectroLights(AuroraManager mngr)
         {
-            // this should be redundant but in case someone chnage settings in active scene, this should 'reset' ratio
+            // this should be redundant but in case someone change settings in active scene, this should 'reset' ratio
             if (!Settings.options.stoveGenerator)
             {
                 stoveHeatRatio = 1f;
