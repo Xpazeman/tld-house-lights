@@ -29,6 +29,7 @@ namespace HouseLights
 
         public static List<GameObject> lightSwitches = new List<GameObject>();
         public static float stoveHeatRatio = 1f;
+        public static float stoveTempIncr = 0f;
 
         public override void OnApplicationStart()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using Harmony;
+using MelonLoader;
 using UnityEngine;
 
 namespace HouseLights
@@ -47,6 +48,7 @@ namespace HouseLights
                 }
                 // if not stove generator, scan extenral and indoors scenes, if using it, scan only internal ones
                 if (!Settings.options.stoveGenerator || (Settings.options.stoveGenerator && GameManager.GetWeatherComponent().IsIndoorScene())) {
+                    HouseLights.stoveTempIncr = 0f;
                     HouseLights.GetSwitches();
                 }
             }
@@ -157,28 +159,35 @@ namespace HouseLights
         [HarmonyPatch(typeof(Fire), "Update")]
         internal class Fire_Update_Prefix
         {
-            private static bool Prefix(Fire __instance)
+            private static void Prefix(Fire __instance)
             {
-                if (!Settings.options.stoveGenerator) { return false; }
-                if (GameManager.m_IsPaused) { return false; }
-
-                float tempIncr = 0f;
-                float currTempIncr = 0f;
-
-                if (__instance.m_HeatSource.IsTurnedOn() && __instance.GetFireState() != FireState.Off) {
-                    GameObject obj = __instance.transform.GetParent()?.gameObject;
-                    if (obj && (obj.name.ToLower().Contains("woodstove") || obj.name.ToLower().Contains("potbellystove")))
+                if (!GameManager.m_IsPaused && Settings.options.stoveGenerator)
+                {
+                    if (__instance.m_HeatSource.IsTurnedOn() && __instance.GetFireState() != FireState.Off)
                     {
-                        // get warmest stove in scene
-                        currTempIncr = __instance.GetCurrentTempIncrease();
-                        if ( currTempIncr > tempIncr)
+                        GameObject obj = __instance.transform.GetParent()?.gameObject;
+                        float ratio = 0f;
+                        if (obj && (obj.name.ToLower().Contains("woodstove") || obj.name.ToLower().Contains("potbellystove")))
                         {
-                            tempIncr = __instance.GetCurrentTempIncrease();
+                            // get warmest stove in scene
+                            float currTempIncr = __instance.GetCurrentTempIncrease();
+                            if (currTempIncr > HouseLights.stoveTempIncr)
+                            {
+                                HouseLights.stoveTempIncr = __instance.GetCurrentTempIncrease();
+                            }
+                            /*
+                            buring out fire does not reduce heat in vanilla game
+                            While we will not fix this (and in a way ember state does keep heat level), we will throttle down electricity output on last 10mins
+                            */
+                            ratio = Mathf.InverseLerp(Settings.options.stoveGeneratorMinTemp, Settings.options.stoveGeneratorTemp, HouseLights.stoveTempIncr);
+                            if (__instance.GetRemainingLifeTimeSeconds() < 600 && __instance.m_ElapsedOnTODSecondsUnmodified > 600)
+                            {
+                                 ratio *= Mathf.InverseLerp(0, 600, __instance.GetRemainingLifeTimeSeconds());
+                            }
+                            HouseLights.stoveHeatRatio = ratio;
                         }
-                        HouseLights.stoveHeatRatio = Mathf.InverseLerp(Settings.options.stoveGeneratorMinTemp, Settings.options.stoveGeneratorTemp, tempIncr);
                     }
                 }
-                return false;
             }
         }
     }
