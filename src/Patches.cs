@@ -149,7 +149,7 @@ namespace HouseLights
         {
             private static void Postfix(Weather __instance, ref bool __result)
             {
-                if (__result && GameManager.GetWeatherComponent().IsIndoorScene() && HouseLights.lightsOn)
+                if (__result && GameManager.GetWeatherComponent().IsIndoorScene() && HouseLights.lightsOn && (HouseLights.stoveHeatRatio >= 0f))
                 {
                     __result = false;
                 }
