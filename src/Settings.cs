@@ -33,12 +33,12 @@ namespace HouseLights
 
         [Name("Generator min temp")]
         [Description("Minimal stove temperature for electricity to flow. Recommended 15")]
-        [Slider(0f, 80f)]
+        [Slider(10f, 80f)]
         public float stoveGeneratorMinTemp = 15f;
 
         [Name("Generator temp")]
         [Description("Optimal stove temperature for electricity to flow; if temperature is lower than this, it will reduce light intesivity. Recommended 50+")]
-        [Slider(0f, 80f)]
+        [Slider(10f, 80f)]
         public float stoveGeneratorTemp = 50f;
 
         [Name("Generator throttle down time ")]
