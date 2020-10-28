@@ -41,7 +41,10 @@ namespace HouseLights
         [Slider(0f, 80f)]
         public float stoveGeneratorTemp = 50f;
 
-
+        [Name("Generator throttle down time ")]
+        [Description("How many minutes before fire will die out, electricity generation will throttle down. Recommended 10 minutes")]
+        [Slider(0.1f, 30f)]
+        public float stoveGeneratorThrottleDown = 10f;
 
         protected override void OnChange(FieldInfo field, object oldValue, object newValue)
         {
@@ -54,11 +57,13 @@ namespace HouseLights
             {
                 SetFieldVisible(nameof(stoveGeneratorTemp), true);
                 SetFieldVisible(nameof(stoveGeneratorMinTemp), true);
+                SetFieldVisible(nameof(stoveGeneratorThrottleDown), true);
             }
             else
             {
                 SetFieldVisible(nameof(stoveGeneratorTemp), false);
                 SetFieldVisible(nameof(stoveGeneratorMinTemp), false);
+                SetFieldVisible(nameof(stoveGeneratorThrottleDown), false);
             }
             if (stoveGeneratorMinTemp >= stoveGeneratorTemp)
             {

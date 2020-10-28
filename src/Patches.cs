@@ -149,7 +149,7 @@ namespace HouseLights
         {
             private static void Postfix(Weather __instance, ref bool __result)
             {
-                if (__result && GameManager.GetWeatherComponent().IsIndoorScene() && HouseLights.lightsOn && HouseLights.stoveHeatRatio >= 0.5f)
+                if (__result && GameManager.GetWeatherComponent().IsIndoorScene() && HouseLights.lightsOn)
                 {
                     __result = false;
                 }
@@ -171,6 +171,7 @@ namespace HouseLights
                         {
                             // get warmest stove in scene
                             float currTempIncr = __instance.GetCurrentTempIncrease();
+                            float throttleDownSec = Settings.options.stoveGeneratorThrottleDown * 60f;
                             if (currTempIncr > HouseLights.stoveTempIncr)
                             {
                                 HouseLights.stoveTempIncr = __instance.GetCurrentTempIncrease();
@@ -180,9 +181,9 @@ namespace HouseLights
                             While we will not fix this (and in a way ember state does keep heat level), we will throttle down electricity output on last 10mins
                             */
                             ratio = Mathf.InverseLerp(Settings.options.stoveGeneratorMinTemp, Settings.options.stoveGeneratorTemp, HouseLights.stoveTempIncr);
-                            if (__instance.GetRemainingLifeTimeSeconds() < 600 && __instance.m_ElapsedOnTODSecondsUnmodified > 600)
+                            if (__instance.GetRemainingLifeTimeSeconds() < throttleDownSec && __instance.m_ElapsedOnTODSecondsUnmodified > throttleDownSec)
                             {
-                                 ratio *= Mathf.InverseLerp(0, 600, __instance.GetRemainingLifeTimeSeconds());
+                                 ratio *= Mathf.InverseLerp(0, throttleDownSec, __instance.GetRemainingLifeTimeSeconds());
                             }
                             HouseLights.stoveHeatRatio = ratio;
                         }
