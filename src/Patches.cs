@@ -6,18 +6,6 @@ namespace HouseLights
 {
     class Patches
     {
-        /*[HarmonyPatch(typeof(GameManager), "Awake")]
-        internal class GameManager_Awake
-        {
-            public static void Prefix()
-            {
-                if (!InterfaceManager.IsMainMenuActive())
-                {
-                    HouseLights.Init();
-                }
-            }
-        }*/
-
         [HarmonyPatch(typeof(GameManager), "InstantiatePlayerObject")]
         internal class GameManager_InstantiatePlayerObject
         {
@@ -26,17 +14,8 @@ namespace HouseLights
                 if (!InterfaceManager.IsMainMenuActive())
                 {
                     HouseLights.Init();
+                    HouseLights.GetSwitches();
                 }
-            }
-        }
-        
-
-    [HarmonyPatch(typeof(MissionServicesManager), "SceneLoadCompleted")]
-        internal class MissionServicesManager_SceneLoadCompleted
-        {
-            private static void Postfix(MissionServicesManager __instance)
-            {
-                HouseLights.GetSwitches();
             }
         }
 
