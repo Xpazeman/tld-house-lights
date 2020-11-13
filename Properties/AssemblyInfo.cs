@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // La información general de un ensamblado se controla mediante el siguiente
 // conjunto de atributos. Cambie estos valores de atributo para modificar la información
 // asociada con un ensamblado.
-[assembly: MelonModInfo(typeof(HouseLights.HouseLights), "House Lights", "2.1", "Xpazeman")]
+[assembly: MelonModInfo(typeof(HouseLights.HouseLights), "House Lights", "2.2", "Xpazeman")]
 [assembly: MelonModGame("Hinterland", "TheLongDark")]
 [assembly: AssemblyTitle("tld-house-lights")]
 [assembly: AssemblyDescription("Small Mod that lets you turn on the lights inside interiors.")]
