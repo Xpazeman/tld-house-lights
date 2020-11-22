@@ -28,13 +28,13 @@ namespace HouseLights
         public static List<ElectrolizerLightConfig> electroLightSources = new List<ElectrolizerLightConfig>();
 
         public static List<GameObject> lightSwitches = new List<GameObject>();
-        public static float stoveHeatRatio = 1f;
+        public static float stoveHeatRatio = 0f;
         public static float stoveTempIncr = 0f;
+        public static bool onlyLow = true;
 
         public override void OnApplicationStart()
         {
             Settings.OnLoad();
-
             Debug.Log("[house-lights] Version " + Assembly.GetExecutingAssembly().GetName().Version);
         }
 

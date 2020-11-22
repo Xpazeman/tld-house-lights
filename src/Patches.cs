@@ -155,6 +155,7 @@ namespace HouseLights
                     {
                         GameObject obj = __instance.transform.GetParent()?.gameObject;
                         float ratio = 0f;
+                        HouseLights.onlyLow = true;
                         if (obj && (obj.name.ToLower().Contains("woodstove") || obj.name.ToLower().Contains("potbellystove")))
                         {
                             // get warmest stove in scene
@@ -163,7 +164,12 @@ namespace HouseLights
                             if (currTempIncr > HouseLights.stoveTempIncr)
                             {
                                 HouseLights.stoveTempIncr = __instance.GetCurrentTempIncrease();
+                                HouseLights.onlyLow = false;
                             }
+                            else if (HouseLights.onlyLow) {
+                                HouseLights.stoveTempIncr = 0;
+                            }
+
                             /*
                             buring out fire does not reduce heat in vanilla game
                             While we will not fix this (and in a way ember state does keep heat level), we will throttle down electricity output on last 10mins
