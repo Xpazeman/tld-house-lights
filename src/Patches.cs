@@ -161,7 +161,7 @@ namespace HouseLights
                             // get warmest stove in scene
                             float currTempIncr = __instance.GetCurrentTempIncrease();
                             float throttleDownSec = Settings.options.stoveGeneratorThrottleDown * 60f;
-                            if (currTempIncr > HouseLights.stoveTempIncr)
+                            if (currTempIncr >= HouseLights.stoveTempIncr)
                             {
                                 HouseLights.stoveTempIncr = __instance.GetCurrentTempIncrease();
                                 HouseLights.onlyLow = false;
