@@ -2,7 +2,7 @@
 Mod for The Long Dark that magically brings electricity back. You can turn lights on and off by using the light switches.
 
 ## Updates
-### v2.1
+### v2.2
 * NEW: Added sound to the light switches.
 * FIX: Tweaked code to improve performance, mod is disabled outdoors.
 
