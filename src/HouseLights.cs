@@ -29,6 +29,11 @@ namespace HouseLights
 
         public static List<GameObject> lightSwitches = new List<GameObject>();
 
+        public static List<string> notReallyOutdoors = new List<string>
+        {
+            "DamTransitionZone"
+        };
+
         public override void OnApplicationStart()
         {
             Settings.OnLoad();

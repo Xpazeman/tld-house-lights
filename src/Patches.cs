@@ -11,7 +11,13 @@ namespace HouseLights
         {
             public static void Prefix()
             {
-                if (!InterfaceManager.IsMainMenuActive())
+                /*if (!InterfaceManager.IsMainMenuActive())
+                {
+                    HouseLights.Init();
+                    HouseLights.GetSwitches();
+                }*/
+
+                if (!InterfaceManager.IsMainMenuActive() && (!GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) || HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
                 {
                     HouseLights.Init();
                     HouseLights.GetSwitches();
@@ -24,6 +30,11 @@ namespace HouseLights
         {
             private static void Postfix(AuroraElectrolizer __instance)
             {
+                if (InterfaceManager.IsMainMenuActive() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
+                {
+                    return;
+                }
+
                 AuroraActivatedToggle[] radios = __instance.gameObject.GetComponentsInParent<AuroraActivatedToggle>();
                 AuroraScreenDisplay[] screens = __instance.gameObject.GetComponentsInChildren<AuroraScreenDisplay>();
 
@@ -40,6 +51,11 @@ namespace HouseLights
         {
             private static void Postfix(AuroraManager __instance, AuroraLightingSimple auroraLightSimple)
             {
+                if (InterfaceManager.IsMainMenuActive() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
+                {
+                    return;
+                }
+
                 HouseLights.AddElectrolizerLight(auroraLightSimple);
             }
         }
@@ -51,6 +67,11 @@ namespace HouseLights
         {
             private static void Postfix(AuroraManager __instance)
             {
+                if (InterfaceManager.IsMainMenuActive() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
+                {
+                    return;
+                }
+
                 if (HouseLights.electroSources.Count > 0)
                 {
                     HouseLights.UpdateElectroLights(__instance);
@@ -85,8 +106,12 @@ namespace HouseLights
                 if (__instance.m_InteractiveObjectUnderCrosshair != null && __instance.m_InteractiveObjectUnderCrosshair.name == "XPZ_Switch")
                 {
                     HouseLights.ToggleLightsState();
+                    GameAudioManager.PlaySound("Stop_RadioAurora", __instance.gameObject);
+
                     Vector3 scale = __instance.m_InteractiveObjectUnderCrosshair.transform.localScale;
                     __instance.m_InteractiveObjectUnderCrosshair.transform.localScale = new Vector3(scale.x, scale.y * -1, scale.z);
+
+                    //Play Sound
 
                     __result = true;
                 }
