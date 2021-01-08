@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MelonLoader;
 
 namespace HouseLights
 {
@@ -59,7 +60,6 @@ namespace HouseLights
                 for (int i = 0; i < obj.transform.childCount; i++)
                 {
                     GameObject child = obj.transform.GetChild(i).gameObject;
-
                     if (child.name.ToLower().Contains(name))
                     {
                         result.Add(child);

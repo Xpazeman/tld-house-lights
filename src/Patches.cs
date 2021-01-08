@@ -1,5 +1,6 @@
 ﻿using System;
 using Harmony;
+using MelonLoader;
 using UnityEngine;
 
 namespace HouseLights
@@ -20,6 +21,28 @@ namespace HouseLights
                 if (!InterfaceManager.IsMainMenuActive() && (!GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) || HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
                 {
                     HouseLights.Init();
+                    HouseLights.GetSwitches();
+                }
+            }
+        }
+
+    [HarmonyPatch(typeof(MissionServicesManager), "SceneLoadCompleted")]
+        internal class MissionServicesManager_SceneLoadCompleted
+        {
+            private static void Postfix(MissionServicesManager __instance)
+            {
+                // Fire_Update_Prefix will not run if there are no fire sources (eg post office)
+                if (Settings.options.stoveGenerator)
+                {
+                    HouseLights.stoveHeatRatio = 0f;
+                }
+                else
+                {
+                    HouseLights.stoveHeatRatio = 1f;
+                }
+                // if not stove generator, scan extenral and indoors scenes, if using it, scan only internal ones
+                if (!Settings.options.stoveGenerator || (Settings.options.stoveGenerator && GameManager.GetWeatherComponent().IsIndoorScene())) {
+                    HouseLights.stoveTempIncr = 0f;
                     HouseLights.GetSwitches();
                 }
             }
@@ -139,9 +162,51 @@ namespace HouseLights
         {
             private static void Postfix(Weather __instance, ref bool __result)
             {
-                if (__result && GameManager.GetWeatherComponent().IsIndoorScene() && HouseLights.lightsOn)
+                if (__result && GameManager.GetWeatherComponent().IsIndoorScene() && HouseLights.lightsOn && (HouseLights.stoveHeatRatio >= 0f))
                 {
                     __result = false;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Fire), "Update")]
+        internal class Fire_Update_Prefix
+        {
+            private static void Prefix(Fire __instance)
+            {
+                if (!GameManager.m_IsPaused && Settings.options.stoveGenerator)
+                {
+                    if (__instance.m_HeatSource.IsTurnedOn() && __instance.GetFireState() != FireState.Off)
+                    {
+                        GameObject obj = __instance.transform.GetParent()?.gameObject;
+                        float ratio = 0f;
+                        HouseLights.onlyLow = true;
+                        if (obj && (obj.name.ToLower().Contains("woodstove") || obj.name.ToLower().Contains("potbellystove")))
+                        {
+                            // get warmest stove in scene
+                            float currTempIncr = __instance.GetCurrentTempIncrease();
+                            float throttleDownSec = Settings.options.stoveGeneratorThrottleDown * 60f;
+                            if (currTempIncr >= HouseLights.stoveTempIncr)
+                            {
+                                HouseLights.stoveTempIncr = __instance.GetCurrentTempIncrease();
+                                HouseLights.onlyLow = false;
+                            }
+                            else if (HouseLights.onlyLow) {
+                                HouseLights.stoveTempIncr = 0;
+                            }
+
+                            /*
+                            buring out fire does not reduce heat in vanilla game
+                            While we will not fix this (and in a way ember state does keep heat level), we will throttle down electricity output on last 10mins
+                            */
+                            ratio = Mathf.InverseLerp(Settings.options.stoveGeneratorMinTemp, Settings.options.stoveGeneratorTemp, HouseLights.stoveTempIncr);
+                            if (__instance.GetRemainingLifeTimeSeconds() < throttleDownSec && __instance.m_ElapsedOnTODSecondsUnmodified > throttleDownSec)
+                            {
+                                 ratio *= Mathf.InverseLerp(0, throttleDownSec, __instance.GetRemainingLifeTimeSeconds());
+                            }
+                            HouseLights.stoveHeatRatio = ratio;
+                        }
+                    }
                 }
             }
         }

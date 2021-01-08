@@ -1,7 +1,5 @@
 ﻿using ModSettings;
-using System.IO;
-using System;
-using System.Text;
+using System.Reflection;
 
 namespace HouseLights
 {
@@ -28,8 +26,52 @@ namespace HouseLights
         [Name("Colorless lights")]
         [Description("If set to yes, lights will cast a more white light. If set to no, they will cast light with the default color.")]
         public bool whiteLights = false;
-    }
 
+        [Name("Stove genrator")]
+        [Description("If set to yes, stoves are working as power generator and needed to be at certian temperature to get lights. Outside lights will be disabled. If not, lights work regardless of stove status and outside light can be used.")]
+        public bool stoveGenerator = false;
+
+        [Name("Generator min temp")]
+        [Description("Minimal stove temperature for electricity to flow. Recommended 15")]
+        [Slider(10f, 80f)]
+        public float stoveGeneratorMinTemp = 15f;
+
+        [Name("Generator temp")]
+        [Description("Optimal stove temperature for electricity to flow; if temperature is lower than this, it will reduce light intesivity. Recommended 50+")]
+        [Slider(10f, 80f)]
+        public float stoveGeneratorTemp = 50f;
+
+        [Name("Generator throttle down time ")]
+        [Description("How many minutes before fire will die out, electricity generation will throttle down. Recommended 10 minutes")]
+        [Slider(0.1f, 30f)]
+        public float stoveGeneratorThrottleDown = 10f;
+
+        protected override void OnChange(FieldInfo field, object oldValue, object newValue)
+        {
+            RefreshFields();
+        }
+
+        internal void RefreshFields()
+        {
+            if (stoveGenerator)
+            {
+                SetFieldVisible(nameof(stoveGeneratorTemp), true);
+                SetFieldVisible(nameof(stoveGeneratorMinTemp), true);
+                SetFieldVisible(nameof(stoveGeneratorThrottleDown), true);
+            }
+            else
+            {
+                SetFieldVisible(nameof(stoveGeneratorTemp), false);
+                SetFieldVisible(nameof(stoveGeneratorMinTemp), false);
+                SetFieldVisible(nameof(stoveGeneratorThrottleDown), false);
+            }
+            if (stoveGeneratorMinTemp >= stoveGeneratorTemp)
+            {
+                stoveGeneratorMinTemp = stoveGeneratorTemp - 1;
+                RefreshGUI();
+            }
+        }
+    }
     internal static class Settings
     {
         public static HouseLightsSettings options;
@@ -37,6 +79,12 @@ namespace HouseLights
         public static void OnLoad()
         {
             options = new HouseLightsSettings();
+            // if someone edited json and tried to be "smart".
+            if (options.stoveGeneratorMinTemp >= options.stoveGeneratorTemp)
+            {
+                options.stoveGeneratorMinTemp = options.stoveGeneratorTemp - 1;
+            }
+            options.RefreshFields();
             options.AddToModSettings("House Lights Settings");
         }
     }

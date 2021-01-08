@@ -28,6 +28,9 @@ namespace HouseLights
         public static List<ElectrolizerLightConfig> electroLightSources = new List<ElectrolizerLightConfig>();
 
         public static List<GameObject> lightSwitches = new List<GameObject>();
+        public static float stoveHeatRatio = 0f;
+        public static float stoveTempIncr = 0f;
+        public static bool onlyLow = true;
 
         public static List<string> notReallyOutdoors = new List<string>
         {
@@ -37,7 +40,6 @@ namespace HouseLights
         public override void OnApplicationStart()
         {
             Settings.OnLoad();
-
             Debug.Log("[house-lights] Version " + Assembly.GetExecutingAssembly().GetName().Version);
         }
 
@@ -118,7 +120,6 @@ namespace HouseLights
 
             Debug.Log("[house-lights] Light switches found:" + wCount + ".");
         }
-
         internal static void ToggleLightsState()
         {
             lightsOn = !lightsOn;
@@ -126,6 +127,12 @@ namespace HouseLights
 
         internal static void UpdateElectroLights(AuroraManager mngr)
         {
+            // this should be redundant but in case someone change settings in active scene, this should 'reset' ratio
+            if (!Settings.options.stoveGenerator)
+            {
+                stoveHeatRatio = 1f;
+            }
+
             for (int e = 0; e < electroSources.Count; e++)
             {
                 if (electroSources[e].electrolizer != null && electroSources[e].electrolizer.m_LocalLights != null)
@@ -164,7 +171,7 @@ namespace HouseLights
                             !electroSources[e].electrolizer.gameObject.name.Contains("ControlBox") &&
                             !electroSources[e].electrolizer.gameObject.name.Contains("Interiorlight"))
                         {
-                            electroSources[e].electrolizer.m_CurIntensity = Settings.options.intensityValue;
+                            electroSources[e].electrolizer.m_CurIntensity = (Settings.options.intensityValue * stoveHeatRatio);
                             electroSources[e].electrolizer.UpdateLight(false);
                             electroSources[e].electrolizer.UpdateFX(false);
                             electroSources[e].electrolizer.UpdateEmissiveObjects(false);
@@ -224,7 +231,7 @@ namespace HouseLights
                             !electroLightSources[e].electrolizer.gameObject.name.Contains("ControlBox") &&
                             !electroLightSources[e].electrolizer.gameObject.name.Contains("Interiorlight"))
                         {
-                            electroLightSources[e].electrolizer.m_CurIntensity = Settings.options.intensityValue;
+                            electroLightSources[e].electrolizer.m_CurIntensity = (Settings.options.intensityValue * stoveHeatRatio);
                             electroLightSources[e].electrolizer.UpdateLight(false);
                             electroLightSources[e].electrolizer.UpdateEmissiveObjects(false);
                             electroLightSources[e].electrolizer.StopAudio();
