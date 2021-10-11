@@ -6,9 +6,12 @@ Mod for The Long Dark that magically brings electricity back. You can turn light
 * NEW: Added sound to the light switches.
 * FIX: Tweaked code to improve performance, mod is disabled outdoors.
 
+### v2.3
+* FIX: Updated to work with TLD 1.95 - Fury, then silence.
+
 ## Installing the mod
 * If you haven't done so already, install MelonLoader by downloading and running [MelonLoader.Installer.exe](https://github.com/HerpDerpinstine/MelonLoader/releases/latest/download/MelonLoader.Installer.exe).
-* You'll need to download and install [ModSettings](https://github.com/zeobviouslyfakeacc/ModSettings/releases/download/v1.7/ModSettings.dll) by Zeo. **MOD WON'T WORK WITHOUT IT**
+* You'll need to download and install [ModSettings](https://github.com/zeobviouslyfakeacc/ModSettings/releases/latest/download/ModSettings.dll) by Zeo. **MOD WON'T WORK WITHOUT IT**
 * Download the latest version of HouseLights.dll from the [releases page](https://github.com/Xpazeman/tld-house-lights/releases/latest).
 * Move HouseLights.dll into the Mods folder in your TLD install directory.
 

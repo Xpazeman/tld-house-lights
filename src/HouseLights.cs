@@ -39,6 +39,8 @@ namespace HouseLights
             Settings.OnLoad();
 
             Debug.Log("[house-lights] Version " + Assembly.GetExecutingAssembly().GetName().Version);
+
+            RegisterCommands();
         }
 
         internal static void Init()
@@ -247,8 +249,8 @@ namespace HouseLights
 
         internal static void RegisterCommands()
         {
-            /*uConsole.RegisterCommand("toggle_lights", ToggleLightsState);
-            uConsole.RegisterCommand("thl", ToggleLightsState);*/
+            uConsole.RegisterCommand("toggle_lights", new Action(ToggleLightsState));
+            uConsole.RegisterCommand("thl", new Action(ToggleLightsState));
         }
     }
 }

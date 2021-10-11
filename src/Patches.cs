@@ -1,5 +1,5 @@
 ﻿using System;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 
 namespace HouseLights
@@ -17,7 +17,7 @@ namespace HouseLights
                     HouseLights.GetSwitches();
                 }*/
 
-                if (!InterfaceManager.IsMainMenuActive() && (!GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) || HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
+                if (!InterfaceManager.IsMainMenuEnabled() && (!GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) || HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
                 {
                     HouseLights.Init();
                     HouseLights.GetSwitches();
@@ -30,7 +30,7 @@ namespace HouseLights
         {
             private static void Postfix(AuroraElectrolizer __instance)
             {
-                if (InterfaceManager.IsMainMenuActive() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
+                if (InterfaceManager.IsMainMenuEnabled() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
                 {
                     return;
                 }
@@ -51,7 +51,7 @@ namespace HouseLights
         {
             private static void Postfix(AuroraManager __instance, AuroraLightingSimple auroraLightSimple)
             {
-                if (InterfaceManager.IsMainMenuActive() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
+                if (InterfaceManager.IsMainMenuEnabled() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
                 {
                     return;
                 }
@@ -67,7 +67,7 @@ namespace HouseLights
         {
             private static void Postfix(AuroraManager __instance)
             {
-                if (InterfaceManager.IsMainMenuActive() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
+                if (InterfaceManager.IsMainMenuEnabled() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
                 {
                     return;
                 }
