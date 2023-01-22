@@ -3,13 +3,18 @@ using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
+using Il2Cpp;
 using MelonLoader;
+using Il2CppTLD.ModularElectrolizer;
+using UnityEngine.UI.Collections;
+using UnityEngine.UI;
+using Il2CppAK;
 
 namespace HouseLights
 {
     public class ElectrolizerConfig : MelonMod
     {
-        public AuroraElectrolizer electrolizer = null;
+        public AuroraModularElectrolizer electrolizer = null;
         public float[] ranges = null;
         public Color[] colors = null;
     }
@@ -34,11 +39,9 @@ namespace HouseLights
             "DamTransitionZone"
         };
 
-        public override void OnApplicationStart()
+        public override void OnInitializeMelon()
         {
             Settings.OnLoad();
-
-            Debug.Log("[house-lights] Version " + Assembly.GetExecutingAssembly().GetName().Version);
 
             RegisterCommands();
         }
@@ -50,16 +53,17 @@ namespace HouseLights
             lightsOn = false;
         }
 
-        internal static void AddElectrolizer(AuroraElectrolizer light)
+        internal static void AddElectrolizer(AuroraModularElectrolizer light)
         {
+            
             ElectrolizerConfig newLight = new ElectrolizerConfig
             {
                 electrolizer = light,
-                ranges = new float[light.m_LocalLights.Length],
-                colors = new Color[light.m_LocalLights.Length]
+                ranges = new float[light.m_LocalLights._size],
+                colors = new Color[light.m_LocalLights._size]
             };
 
-            for (int i = 0; i < light.m_LocalLights.Length; i++)
+            for (int i = 0; i < light.m_LocalLights._size; i++)
             {
                 float curRange = light.m_LocalLights[i].range;
                 Color curColor = light.m_LocalLights[i].color;
@@ -114,11 +118,8 @@ namespace HouseLights
                         }
                     }
                 }
-
-
             }
-
-            Debug.Log("[house-lights] Light switches found:" + wCount + ".");
+            MelonLogger.Msg("[House Lights] Light switches found: " + wCount + ".");
         }
 
         internal static void ToggleLightsState()
@@ -133,7 +134,7 @@ namespace HouseLights
                 if (electroSources[e].electrolizer != null && electroSources[e].electrolizer.m_LocalLights != null)
                 {
 
-                    for (int i = 0; i < electroSources[e].electrolizer.m_LocalLights.Length; i++)
+                    for (int i = 0; i < electroSources[e].electrolizer.m_LocalLights._size; i++)
                     {
                         float cur_range = electroSources[e].ranges[i];
 
@@ -166,24 +167,22 @@ namespace HouseLights
                             !electroSources[e].electrolizer.gameObject.name.Contains("ControlBox") &&
                             !electroSources[e].electrolizer.gameObject.name.Contains("Interiorlight"))
                         {
-                            electroSources[e].electrolizer.m_CurIntensity = Settings.options.intensityValue;
+                            electroSources[e].electrolizer.UpdateIntensity(1f, Settings.options.intensityValue);
                             electroSources[e].electrolizer.UpdateLight(false);
-                            electroSources[e].electrolizer.UpdateFX(false);
                             electroSources[e].electrolizer.UpdateEmissiveObjects(false);
                             electroSources[e].electrolizer.StopAudio();
                         }
                     }
                     else if (!mngr.AuroraIsActive())
                     {
-                        electroSources[e].electrolizer.m_CurIntensity = 0f;
+                        electroSources[e].electrolizer.UpdateIntensity(1f, 0f);
                         electroSources[e].electrolizer.UpdateLight(true);
-                        electroSources[e].electrolizer.UpdateFX(true);
                         electroSources[e].electrolizer.UpdateEmissiveObjects(true);
                         electroSources[e].electrolizer.UpdateAudio();
                     }
                     else
                     {
-                        electroSources[e].electrolizer.UpdateIntensity(Time.deltaTime, true);
+                        electroSources[e].electrolizer.UpdateIntensity(Time.deltaTime, mngr.m_NormalizedActive);
                     }
                 }
             }

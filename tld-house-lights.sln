@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2027
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tld-house-lights", "tld-house-lights.csproj", "{65F46C2A-856C-48B4-8B18-43E33EE3C439}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HouseLights", "HouseLights.csproj", "{65F46C2A-856C-48B4-8B18-43E33EE3C439}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

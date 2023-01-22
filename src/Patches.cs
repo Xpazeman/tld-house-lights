@@ -1,6 +1,9 @@
 ﻿using System;
+using Il2Cpp;
 using HarmonyLib;
 using UnityEngine;
+using Il2CppTLD.ModularElectrolizer;
+using MelonLoader;
 
 namespace HouseLights
 {
@@ -19,16 +22,18 @@ namespace HouseLights
 
                 if (!InterfaceManager.IsMainMenuEnabled() && (!GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) || HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
                 {
+                    MelonLogger.Msg("Init");
+
                     HouseLights.Init();
                     HouseLights.GetSwitches();
                 }
             }
         }
 
-        [HarmonyPatch(typeof(AuroraElectrolizer), "Initialize")]
+        [HarmonyPatch(typeof(AuroraModularElectrolizer), "Initialize")]
         internal class AuroraElectrolizer_Initialize
         {
-            private static void Postfix(AuroraElectrolizer __instance)
+            private static void Postfix(AuroraModularElectrolizer __instance)
             {
                 if (InterfaceManager.IsMainMenuEnabled() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
                 {
@@ -60,8 +65,6 @@ namespace HouseLights
             }
         }
 
-
-        //[HarmonyPatch(typeof(AuroraManager), "Update")]
         [HarmonyPatch(typeof(AuroraManager), "UpdateForceAurora")]
         internal class AuroraManager_UpdateForceAurora
         {
@@ -79,21 +82,26 @@ namespace HouseLights
             }
         }
 
-        [HarmonyPatch(typeof(PlayerManager), "GetInteractiveObjectDisplayText", new Type[] {typeof(GameObject)})]
-        internal class PlayerManager_GetObjText
+        [HarmonyPatch(typeof(PlayerManager), nameof(PlayerManager.UpdateHUDText), new Type[] { typeof(Panel_HUD) })]
+        internal class PlayerManage_UpdateHUDText
         {
-            private static void Postfix(PlayerManager __instance, ref string __result, GameObject interactiveObject)
+            private static void Postfix(PlayerManager __instance, Panel_HUD hud)
             {
-                if (interactiveObject.name == "XPZ_Switch")
+                GameObject interactiveObject = __instance.GetInteractiveObjectUnderCrosshairs(100);
+                string hoverText;
+
+                if (interactiveObject != null && interactiveObject.name == "XPZ_Switch")
                 {
                     if (HouseLights.lightsOn)
                     {
-                        __result = "Turn Lights Off";
+                        hoverText = "Turn Lights Off";
                     }
                     else
                     {
-                        __result = "Turn Lights On";
+                        hoverText = "Turn Lights On";
                     }
+
+                    hud.SetHoverText(hoverText, interactiveObject, HoverTextState.CanInteract);
                 }
             }
         }
@@ -103,13 +111,15 @@ namespace HouseLights
         {
             private static void Postfix(PlayerManager __instance, ref bool __result)
             {
-                if (__instance.m_InteractiveObjectUnderCrosshair != null && __instance.m_InteractiveObjectUnderCrosshair.name == "XPZ_Switch")
+                GameObject interactiveObject = __instance.GetInteractiveObjectUnderCrosshairs(100);
+
+                if (interactiveObject != null && interactiveObject.name == "XPZ_Switch")
                 {
                     HouseLights.ToggleLightsState();
                     GameAudioManager.PlaySound("Stop_RadioAurora", __instance.gameObject);
 
-                    Vector3 scale = __instance.m_InteractiveObjectUnderCrosshair.transform.localScale;
-                    __instance.m_InteractiveObjectUnderCrosshair.transform.localScale = new Vector3(scale.x, scale.y * -1, scale.z);
+                    Vector3 scale = interactiveObject.transform.localScale;
+                    interactiveObject.transform.localScale = new Vector3(scale.x, scale.y * -1, scale.z);
 
                     //Play Sound
 
@@ -118,10 +128,10 @@ namespace HouseLights
             }
         }
 
-        [HarmonyPatch(typeof(AuroraElectrolizer), "UpdateIntensity")]
+        [HarmonyPatch(typeof(AuroraModularElectrolizer), "UpdateIntensity")]
         internal class AuroraElectrolizer_UpdateIntensity
         {
-            private static bool Prefix(AuroraElectrolizer __instance)
+            private static bool Prefix(AuroraModularElectrolizer __instance)
             {
                 if (Settings.options.disableAuroraFlicker)
                 {
