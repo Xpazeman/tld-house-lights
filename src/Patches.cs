@@ -14,15 +14,9 @@ namespace HouseLights
         {
             public static void Prefix()
             {
-                /*if (!InterfaceManager.IsMainMenuActive())
-                {
-                    HouseLights.Init();
-                    HouseLights.GetSwitches();
-                }*/
-
                 if (!InterfaceManager.IsMainMenuEnabled() && (!GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) || HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
                 {
-                    MelonLogger.Msg("Init");
+                    MelonLogger.Msg("Scene Init");
 
                     HouseLights.Init();
                     HouseLights.GetSwitches();
@@ -56,7 +50,7 @@ namespace HouseLights
         {
             private static void Postfix(AuroraManager __instance, AuroraLightingSimple auroraLightSimple)
             {
-                if (InterfaceManager.IsMainMenuEnabled() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
+                if (InterfaceManager.IsMainMenuEnabled() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene) && !Settings.options.enableOutside))
                 {
                     return;
                 }
@@ -70,7 +64,7 @@ namespace HouseLights
         {
             private static void Postfix(AuroraManager __instance)
             {
-                if (InterfaceManager.IsMainMenuEnabled() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene)))
+                if (InterfaceManager.IsMainMenuEnabled() || (GameManager.IsOutDoorsScene(GameManager.m_ActiveScene) && !HouseLights.notReallyOutdoors.Contains(GameManager.m_ActiveScene) && !Settings.options.enableOutside))
                 {
                     return;
                 }

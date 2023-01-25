@@ -129,11 +129,24 @@ namespace HouseLights
 
         internal static void UpdateElectroLights(AuroraManager mngr)
         {
+            Vector3 playerPos = GameManager.GetVpFPSPlayer().gameObject.transform.position;
+
             for (int e = 0; e < electroSources.Count; e++)
             {
                 if (electroSources[e].electrolizer != null && electroSources[e].electrolizer.m_LocalLights != null)
                 {
+                    float distance = Mathf.Abs(Vector3.Distance(electroSources[e].electrolizer.gameObject.transform.position, playerPos));
 
+                    if (distance > Settings.options.cullDistance && !mngr.AuroraIsActive())
+                    {
+                        electroSources[e].electrolizer.UpdateIntensity(1f, 0f);
+                        electroSources[e].electrolizer.UpdateLight(true);
+                        electroSources[e].electrolizer.UpdateEmissiveObjects(true);
+                        electroSources[e].electrolizer.UpdateAudio();
+
+                        continue;
+                    }
+                    
                     for (int i = 0; i < electroSources[e].electrolizer.m_LocalLights._size; i++)
                     {
                         float cur_range = electroSources[e].ranges[i];
@@ -191,6 +204,17 @@ namespace HouseLights
             {
                 if (electroLightSources[e].electrolizer != null && electroLightSources[e].electrolizer.m_LocalLights != null)
                 {
+                    float distance = Mathf.Abs(Vector3.Distance(electroLightSources[e].electrolizer.gameObject.transform.position, playerPos));
+
+                    if (distance > Settings.options.cullDistance && !mngr.AuroraIsActive())
+                    {
+                        electroLightSources[e].electrolizer.m_CurIntensity = 0f;
+                        electroLightSources[e].electrolizer.UpdateLight(true);
+                        electroLightSources[e].electrolizer.UpdateEmissiveObjects(true);
+                        electroLightSources[e].electrolizer.UpdateAudio();
+
+                        continue;
+                    }
 
                     for (int i = 0; i < electroLightSources[e].electrolizer.m_LocalLights.Length; i++)
                     {

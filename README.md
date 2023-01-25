@@ -2,6 +2,10 @@
 Mod for The Long Dark that magically brings electricity back. You can turn lights on and off by using the light switches.
 
 ## Updates
+### v2.5
+* NEW: Added toggle to enable the mod while outside
+* NEW: Added a setting for distance culling to improve performance
+
 ### v2.4
 * FIX: Updated to work with TLD 2.06
 
