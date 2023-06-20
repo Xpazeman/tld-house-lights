@@ -104,6 +104,7 @@ namespace HouseLights
             foreach (GameObject rootObj in rObjs)
             {
                 HouseLightsUtils.GetChildrenWithName(rootObj, "lightswitch", result);
+                HouseLightsUtils.GetChildrenWithName(rootObj, "switchbox", result);
 
                 if (result.Count > 0)
                 {

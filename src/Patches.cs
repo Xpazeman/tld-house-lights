@@ -81,6 +81,8 @@ namespace HouseLights
         {
             private static void Postfix(PlayerManager __instance, Panel_HUD hud)
             {
+                if (GameManager.GetMainCamera() == null) return;
+                
                 GameObject interactiveObject = __instance.GetInteractiveObjectUnderCrosshairs(100);
                 string hoverText;
 
